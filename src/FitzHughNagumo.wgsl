@@ -1,5 +1,5 @@
 struct TimeUniform {
-  dt: u32,
+  dt: f32,
 };
 
 struct FHNParameters {
@@ -24,12 +24,12 @@ var tex_in : texture_2d<f32>;
 @group(0) @binding(3)
 var tex_out : texture_storage_2d<rgba32float, write>;
 
-fn fhn_system_rhs(u: f32, v: f32, lap_u: vec2<u32>) -> vec2<f32> {
+fn fhn_system_rhs(u: f32, v: f32, lap_u: f32) -> vec2<f32> {
   let du = sys_params.du_rate * lap_u 
          + sys_params.c1 * u * (u - sys_params.a) * (1.0 - u)
          - sys_params.c2 * u * v;
 
-  let dv = sys_params.b * (u - d * v);
+  let dv = sys_params.b * (u - sys_params.d * v);
 
   return vec2<f32>(du, dv);
 };
