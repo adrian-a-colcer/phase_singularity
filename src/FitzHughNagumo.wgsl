@@ -1,6 +1,9 @@
+// FitzHugh-Nagumo model in 2D using a nine-point stencil for the Laplacian
+// no-flux boundary conditions are implemented by clamping the texture coordinates to the valid range
+
 struct TimeUniform {
   dt: f32,
-};
+}
 
 struct FHNParameters {
   du_rate: f32,
@@ -9,7 +12,7 @@ struct FHNParameters {
   c1: f32,
   c2: f32,
   d: f32,
-};
+}
 
 @group(0) @binding(0)
 var<uniform> u_time : TimeUniform;
@@ -32,15 +35,15 @@ fn fhn_system_rhs(u: f32, v: f32, lap_u: f32) -> vec2<f32> {
   let dv = sys_params.b * (u - sys_params.d * v);
 
   return vec2<f32>(du, dv);
-};
+}
 
-fn nine_point_stencil(
-  center: vec2<f32>, up: vec2<f32>,
-  down: vec2<f32>, left: vec2<f32>,
-  right: vec2<f32>, up_left: vec2<f32>,
-  up_right: vec2<f32>, down_left: vec2<f32>,
-  down_right: vec2<f32>,
-) -> vec2<f32> {
+fn nine_point_stencil_u(
+  center: f32, up: f32,
+  down: f32, left: f32,
+  right: f32, up_left: f32,
+  up_right: f32, down_left: f32,
+  down_right: f32,
+) -> f32 {
   let cross_term = 4.0 * (up + down + left + right);
   let diag_term = up_left + up_right + down_left + down_right;
   let laplace = (cross_term + diag_term - 20.0 * center) / 6.0;
